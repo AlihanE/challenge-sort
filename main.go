@@ -4,32 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"sort"
 
+	"github.com/AlihanE/challenge-sort/sorts"
 	"github.com/pkg/profile"
 )
 
 var isUniq bool
-
-type SortedWords struct {
-	arr []string
-}
-
-func (sw *SortedWords) Less(i, j int) bool {
-	return sw.arr[i] < sw.arr[j]
-}
-
-func (sw *SortedWords) Len() int {
-	return len(sw.arr)
-}
-
-func (sw *SortedWords) Swap(i, j int) {
-	sw.arr[i], sw.arr[j] = sw.arr[j], sw.arr[i]
-}
-
-func (sw *SortedWords) Add(word string) {
-	sw.arr = append(sw.arr, word)
-}
 
 func main() {
 	defer profile.Start(profile.MemProfileAllocs, profile.ProfilePath(".")).Stop()
@@ -39,10 +19,17 @@ func main() {
 	}
 
 	filename := ""
+	var sorterFunc func([]string) []string
 	for i, v := range os.Args {
 		switch v {
 		case "-u":
 			isUniq = true
+		case "-count":
+			sorterFunc = sorts.CountingSort
+		default:
+			if sorterFunc == nil {
+				sorterFunc = sorts.DefaultSort
+			}
 		}
 
 		if i == len(os.Args)-1 {
@@ -52,16 +39,14 @@ func main() {
 
 	f := read(filename)
 
-	words := &SortedWords{}
+	words := []string{}
 	s := bufio.NewScanner(f)
 	for s.Scan() {
-		words.Add(s.Text())
+		words = append(words, s.Text())
 	}
 
-	sort.Sort(words)
-
 	uniq := make(map[string]struct{})
-	for _, v := range words.arr {
+	for _, v := range sorterFunc(words) {
 		if isUniq {
 			if _, ok := uniq[v]; !ok {
 				uniq[v] = struct{}{}

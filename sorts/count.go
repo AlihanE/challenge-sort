@@ -1,17 +1,15 @@
 package sorts
 
-import "fmt"
-
 const length = 255
 
-func CountingSort(words []string) {
+func CountingSort(words []string) []string {
 	max := getMax(words)
-	var res []string
-	for i := 0; i < max; i++ {
-		res = countSort(words, i)
+	res := words
+	for i := max; i >= 0; i-- {
+		res = countSort(res, i)
 	}
 
-	fmt.Println("res", res)
+	return res
 }
 
 func getMax(words []string) int {
