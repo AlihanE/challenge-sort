@@ -26,6 +26,10 @@ func main() {
 			isUniq = true
 		case "-count":
 			sorterFunc = sorts.CountingSort
+		case "-merge":
+			sorterFunc = sorts.MergeSort
+		case "-quick":
+			sorterFunc = sorts.QuickSort
 		default:
 			if sorterFunc == nil {
 				sorterFunc = sorts.DefaultSort
